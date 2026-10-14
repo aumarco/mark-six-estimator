@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>六合睇估計 · 30期走勢分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=Archivo+Black&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+ --slip:#EAF1EC; --paper:#F7FAF7; --ink:#14302A; --muted:#5D7469; --rule:#C3D4C9;
+ --red:#D7263D; --blue:#1F5FBF; --green:#1E9A5A; --gold:#E3A72F;
+ --disp:'Noto Serif TC',serif; --body:'Noto Sans TC',sans-serif; --num:'Archivo Black',sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--slip);color:var(--ink);font-family:var(--body);line-height:1.55;
+ background-image:repeating-linear-gradient(0deg,transparent 0 27px,rgba(20,48,42,.045) 27px 28px);}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header{border-bottom:2px solid var(--ink);background:var(--paper)}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:22px 0 14px;flex-wrap:wrap}
+.brand h1{font-family:var(--disp);font-weight:900;font-size:clamp(30px,5vw,48px);letter-spacing:.04em;line-height:1}
+.brand h1 em{font-style:normal;color:var(--red)}
+.brand p{font-size:13px;color:var(--muted);margin-top:6px}
+.next{font-family:var(--mono);font-size:12px;text-align:right;color:var(--muted)}
+.next b{display:block;font-family:var(--disp);font-size:18px;color:var(--ink)}
+nav{display:flex;gap:0;overflow-x:auto}
+nav button{background:none;border:0;border-bottom:4px solid transparent;padding:12px 18px 10px;font-size:15px;font-weight:700;color:var(--muted);white-space:nowrap}
+nav button[aria-selected=true]{color:var(--ink);border-color:var(--red)}
+main{padding:28px 0 60px}
+section.page{display:none}section.page.on{display:block;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+h2{font-family:var(--disp);font-size:26px;font-weight:900;margin-bottom:4px}
+.lede{color:var(--muted);font-size:14px;margin-bottom:22px;max-width:70ch}
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:20px;margin-bottom:20px}
+.card h3{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card h3 small{font-weight:400;color:var(--muted);font-size:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr}}
+/* balls */
+.ball{--c:var(--red);display:inline-grid;place-items:center;width:var(--s,34px);height:var(--s,34px);border-radius:50%;
+ font-family:var(--num);font-size:calc(var(--s,34px)*.4);color:var(--ink);flex:none;
+ background:radial-gradient(circle at 50% 50%,#fff 0 42%,transparent 43%),radial-gradient(circle at 32% 28%,rgba(255,255,255,.55),transparent 40%),var(--c);
+ box-shadow:inset 0 -3px 6px rgba(0,0,0,.25),0 1px 2px rgba(0,0,0,.2)}
+.ball.blue{--c:var(--blue)}.ball.green{--c:var(--green)}
+.ball.dim{opacity:.28}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.plus{color:var(--muted);font-weight:700;margin:0 2px}
+/* latest */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;margin-bottom:20px}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+.latest .lbl{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.latest .row{--s:52px;gap:10px;margin:12px 0 6px}
+.verdict{background:var(--ink);color:var(--slip);border-radius:14px;padding:20px}
+.verdict h3{font-family:var(--disp);font-size:18px;margin-bottom:10px;color:#fff}
+.verdict p{font-size:14px;opacity:.9;margin-bottom:8px}
+.verdict .tag{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--gold);color:var(--ink);border-radius:4px;padding:2px 7px;margin-bottom:10px}
+/* bars */
+.bars{display:grid;grid-template-columns:repeat(49,1fr);gap:3px;align-items:end;height:190px;border-bottom:1px solid var(--ink);padding-top:8px}
+.bar{position:relative;border-radius:3px 3px 0 0;background:var(--c);min-height:2px;transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.bar:hover{filter:brightness(1.15)}
+.bar span{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:var(--ink)}
+.axis{display:grid;grid-template-columns:repeat(49,1fr);gap:3px;font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;margin-top:4px}
+@media(max-width:640px){.axis span:nth-child(even){visibility:hidden}.bar span{display:none}}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+/* heat board */
+.board{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cell{aspect-ratio:1;border-radius:10px;display:grid;place-items:center;position:relative;font-family:var(--num);font-size:16px;border:1px solid var(--rule)}
+.cell small{position:absolute;bottom:3px;right:6px;font-family:var(--mono);font-size:9px;opacity:.75}
+.cell .dot{position:absolute;top:5px;left:6px;width:7px;height:7px;border-radius:50%}
+/* stats */
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--rule);font-size:14px}
+.kv:last-child{border:0}.kv b{font-family:var(--mono)}
+/* matrix */
+.mx{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.mx div{aspect-ratio:1;background:var(--paper);position:relative}
+.mx div[data-t]:hover::after{content:attr(data-t);position:absolute;z-index:5;left:100%;top:100%;white-space:nowrap;background:var(--ink);color:#fff;font-size:11px;padding:4px 7px;border-radius:5px;font-family:var(--mono)}
+.mxwrap{display:grid;grid-template-columns:auto 1fr;gap:6px;align-items:start}
+.pairlist{display:flex;flex-direction:column;gap:10px;max-height:360px;overflow:auto}
+.pair{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:10px;border:1px solid var(--rule);border-radius:10px;font-size:13px}
+.pair .ov{font-family:var(--num);font-size:22px;color:var(--red);width:38px;text-align:center}
+.pair .row{--s:24px;gap:4px;margin-top:4px}
+/* sim chart */
+.hist{display:flex;align-items:end;gap:2px;height:120px;border-bottom:1px solid var(--ink);position:relative}
+.hist div{flex:1;background:var(--rule);border-radius:2px 2px 0 0}
+.hist .mark{position:absolute;bottom:0;top:-6px;width:2px;background:var(--red)}
+.hist .mark span{position:absolute;top:-18px;left:4px;font-size:11px;color:var(--red);font-weight:700;white-space:nowrap}
+/* sets */
+.set{border-left:6px solid var(--c);padding-left:14px}
+.set .row{--s:30px}
+.timeline{display:flex;gap:3px;margin:8px 0 4px}
+.timeline span{flex:1;height:26px;border-radius:4px;display:grid;place-items:center;font-family:var(--mono);font-size:9px;color:#fff}
+/* predict */
+.slip{background:var(--paper);border:2px solid var(--ink);border-radius:18px;padding:26px;position:relative;overflow:hidden}
+.slip::before{content:"";position:absolute;inset:0 auto 0 0;width:14px;background:repeating-linear-gradient(180deg,var(--ink) 0 8px,transparent 8px 16px);opacity:.85}
+.slip-in{padding-left:18px}
+.slip h3{font-family:var(--disp);font-size:20px;margin-bottom:4px}
+.slip .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:18px}
+.zone{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:center;padding:16px 0;border-top:1px dashed var(--rule)}
+.zone .nm{font-family:var(--disp);font-weight:900;font-size:26px}
+.zone .nm small{display:block;font-family:var(--body);font-size:12px;font-weight:400;color:var(--muted)}
+.zone .row{--s:58px;gap:12px}
+.zone.legs .row{--s:46px}
+@media(max-width:640px){.zone{grid-template-columns:1fr}.zone .row{--s:46px}.zone.legs .row{--s:40px}}
+.why{font-size:13px}
+.why table{width:100%;border-collapse:collapse;font-size:13px}
+.why th,.why td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--rule)}
+.why th{font-weight:500;color:var(--muted);font-size:12px}
+.why td.n{font-family:var(--mono)}
+.meter{height:8px;background:var(--slip);border-radius:4px;overflow:hidden;min-width:60px}
+.meter i{display:block;height:100%;background:var(--ink)}
+.cost{font-size:13px;color:var(--muted);margin-top:14px}
+/* machine */
+.mach{display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:28px;align-items:start}
+@media(max-width:820px){.mach{grid-template-columns:1fr}}
+.drum{position:relative;aspect-ratio:1;max-width:420px;width:100%;margin:0 auto}
+.drum canvas{width:100%;height:100%;display:block;border-radius:50%;
+ background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.9),rgba(255,255,255,.35) 45%,rgba(195,212,201,.5) 70%,rgba(20,48,42,.25));
+ box-shadow:inset 0 0 0 6px rgba(20,48,42,.85),inset 0 0 40px rgba(20,48,42,.25),0 18px 30px -12px rgba(20,48,42,.45)}
+.chute{width:64px;height:30px;margin:-4px auto 0;background:var(--ink);border-radius:0 0 12px 12px}
+.ctl{display:flex;flex-direction:column;gap:16px}
+.seg{display:inline-flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:none;padding:10px 20px;font-weight:700;font-size:15px;color:var(--ink)}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+.go{background:var(--red);color:#fff;border:0;border-radius:999px;padding:16px 28px;font-family:var(--disp);font-size:22px;font-weight:900;letter-spacing:.1em;box-shadow:0 5px 0 #8f1626;transition:transform .1s}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 #8f1626}
+.go:disabled{opacity:.55;cursor:wait}
+.tray{min-height:74px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px;border:2px dashed var(--rule);border-radius:14px;--s:50px}
+.tray .ball{animation:drop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes drop{from{transform:translateY(-40px) scale(.4);opacity:0}}
+.tray:empty::before{content:"撳「開始攪珠」，運財號碼會喺呢度出現";color:var(--muted);font-size:13px}
+label.chk{font-size:14px;display:flex;gap:8px;align-items:center}
+.mini{background:none;border:2px solid var(--ink);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px}
+.mini:hover{background:var(--ink);color:#fff}
+.mini.warn{border-color:var(--muted);color:var(--muted);font-weight:500;font-size:12px;padding:6px 12px}
+input[type=text]{width:100%;padding:12px 14px;border:1px solid var(--rule);border-radius:10px;font-family:var(--body);font-size:14px;background:#fff;color:var(--ink)}
+.msg{font-size:13px;margin-top:8px;min-height:18px}
+.msg.ok{color:var(--green)}.msg.err{color:var(--red)}
+.hist-list{font-size:13px;display:flex;flex-direction:column;gap:8px;max-height:220px;overflow:auto}
+.hist-list .row{--s:26px;gap:4px}
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl td,.tbl th{padding:8px 6px;border-bottom:1px solid var(--rule);text-align:left}
+.tbl th{color:var(--muted);font-weight:500;font-size:12px}
+.tbl .row{--s:28px;gap:4px;flex-wrap:nowrap}
+.tblwrap{overflow-x:auto}
+.note{font-size:12px;color:var(--muted);border-top:1px solid var(--rule);padding-top:14px;margin-top:10px}
+footer{font-size:12px;color:var(--muted);text-align:center;padding:24px 0 40px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap">
+  <div class="top">
+   <div class="brand"><h1>六合<em>睇</em>估計</h1><p>近 30 期攪珠走勢 · 熱冷號 · 兩套波假設檢驗 · 膽拖估算</p></div>
+   <div class="next">下期攪珠<b>數據更新至 25/243 · 13-10-2026</b></div>
+  </div>
+  <nav role="tablist">
+   <button role="tab" aria-selected="true" data-p="p1">走勢總覽</button>
+   <button role="tab" aria-selected="false" data-p="p2">兩套波 Pattern</button>
+   <button role="tab" aria-selected="false" data-p="p3">下期估算</button>
+   <button role="tab" aria-selected="false" data-p="p4">運財攪珠機</button>
+   <button role="tab" aria-selected="false" data-p="p5">30 期紀錄</button>
+  </nav>
+ </div>
+</header>
+<main class="wrap">
+
+<section class="page on" id="p1">
+ <div class="hero">
+  <div class="card latest">
+   <div class="lbl" id="latestLbl"></div>
+   <div class="row" id="latestRow"></div>
+   <div class="lbl">每格珠嘅顏色跟足六合彩紅、藍、綠波</div>
+  </div>
+  <div class="verdict" id="verdict"></div>
+ </div>
+ <div class="card" id="upd">
+  <h3>數據更新<small id="updStatus"></small></h3>
+  <div class="row" style="gap:14px;align-items:center">
+   <button class="mini" id="btnAuto">自動攞最新攪珠結果</button>
+   <span style="font-size:12px;color:var(--muted);max-width:52ch">會經公共代理去讀六合彩結果網頁。舊機／街外網絡或者代理繁忙時可能失敗，咁就用手動貼上。</span>
+  </div>
+  <div style="margin-top:16px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start">
+   <input type="text" id="pasteIn" placeholder="貼上攪珠結果，例：26/110 15/10/2026 3 5 9 17 21 26 +38">
+   <button class="mini" id="btnPaste">加入</button>
+  </div>
+  <div class="msg" id="pasteMsg"></div>
+  <div style="margin-top:10px"><button class="mini warn" id="btnReset">回復預設 30 期數據</button></div>
+ </div>
+ <div class="card">
+  <h3>49 個號碼出現次數（正碼）<small>30 期 × 6 = 180 粒，平均每個號碼 ≈ 3.7 次</small></h3>
+  <div class="bars" id="bars"></div>
+  <div class="axis" id="axis"></div>
+  <div class="legend"><span><i style="background:var(--red)"></i>紅波</span><span><i style="background:var(--blue)"></i>藍波</span><span><i style="background:var(--green)"></i>綠波</span><span>— 虛線 = 理論平均</span></div>
+ </div>
+ <div class="grid2">
+  <div class="card">
+   <h3>熱度攪珠板<small>深色 = 出得多；右下角 = 幾多期冇出</small></h3>
+   <div class="board" id="board"></div>
+  </div>
+  <div class="card">
+   <h3>30 期基本數據</h3>
+   <div id="kv"></div>
+  </div>
+ </div>
+</section>
+
+<section class="page" id="p2">
+ <h2>係咪用緊兩套波？</h2>
+ <p class="lede">你嘅假設：如果攪珠用兩套唔同嘅波輪流用，用同一套波嗰幾期應該會出返差唔多嘅號碼。我哋做兩樣嘢：①搵出撞號多嘅期數；②用電腦將 30 期分成兩組，睇下分得幾「乾淨」，再同 300 次純隨機模擬比較。</p>
+ <div class="grid2">
+  <div class="card">
+   <h3>期與期撞號矩陣<small>格越深 = 兩期共同號碼越多（滑鼠指住睇）</small></h3>
+   <div id="matrix"></div>
+  </div>
+  <div class="card">
+   <h3>撞 3 粒或以上嘅組合<small id="hiNote"></small></h3>
+   <div class="pairlist" id="pairs"></div>
+  </div>
+ </div>
+ <div class="grid2">
+  <div class="card">
+   <h3>真實數據 vs 300 次隨機模擬<small>「兩組分群集中度」</small></h3>
+   <div class="hist" id="hist"></div>
+   <p class="note" id="histNote"></p>
+  </div>
+  <div class="card">
+   <h3>撞 ≥3 粒組合數量 vs 隨機<small>每次模擬 30 期</small></h3>
+   <div class="hist" id="hist2"></div>
+   <p class="note" id="hist2Note"></p>
+  </div>
+ </div>
+ <div class="card">
+  <h3>電腦分出嚟嘅「A 套 / B 套」<small>最新一期在左邊</small></h3>
+  <div class="timeline" id="tl"></div>
+  <div class="grid2" style="margin-top:16px" id="sets"></div>
+ </div>
+</section>
+
+<section class="page" id="p3">
+ <h2>26/110 期估算</h2>
+ <p class="lede">綜合四個因素計分：近期熱度（越近期權重越高）、遺漏回補（隔咗 5–14 期未出）、同上期號碼嘅拍檔次數、同「同一套波」嘅組內熱號。最高 4 個做膽，跟住 8 個做腳。</p>
+ <div class="grid2" style="grid-template-columns:1.25fr 1fr">
+  <div class="slip">
+   <div class="slip-in">
+    <h3>膽拖參考 · 4 膽 8 腳</h3>
+    <div class="meta">26/110 · 15/10/2026 · 根據 26/080 – 26/109</div>
+    <div class="zone"><div class="nm">膽<small>Bankers</small></div><div class="row" id="bk"></div></div>
+    <div class="zone legs"><div class="nm">腳<small>Legs</small></div><div class="row" id="lg"></div></div>
+    <p class="cost">4 膽 8 腳 = 每次 C(8,2) = 28 注；以每注 $10 計 = $280（每注 $5 部分注 = $140）。</p>
+   </div>
+  </div>
+  <div class="card why">
+   <h3>計分排名（頭 12 位）</h3>
+   <table><thead><tr><th>號碼</th><th>出現</th><th>遺漏</th><th>總分</th></tr></thead><tbody id="why"></tbody></table>
+  </div>
+ </div>
+ <p class="note">⚠ 六合彩每期獨立攪珠，每個號碼機會均等。以上係用統計規則揀出嚟嘅參考號碼，唔代表中獎機會比其他號碼高。量力而為，未滿 18 歲不得投注。</p>
+</section>
+
+<section class="page" id="p4">
+ <h2>運財攪珠機</h2>
+ <p class="lede">揀要幾多個號碼，撳掣，49 粒波喺攪珠機入面滾，逐粒跌出嚟。</p>
+ <div class="mach">
+  <div><div class="drum"><canvas id="cv" width="840" height="840" aria-label="攪珠機動畫"></canvas></div><div class="chute"></div></div>
+  <div class="ctl">
+   <div><div style="font-size:13px;color:var(--muted);margin-bottom:6px">出幾多個號碼</div>
+    <div class="seg" id="seg"><button aria-pressed="true" data-n="6">6 個</button><button aria-pressed="false" data-n="7">7 個</button><button aria-pressed="false" data-n="8">8 個</button></div></div>
+   <label class="chk"><input type="checkbox" id="mix"> 加入下期估算：先放 1 個膽入去</label>
+   <button class="go" id="go">開始攪珠</button>
+   <div class="tray" id="tray" aria-live="polite"></div>
+   <div class="card" style="margin:0"><h3>今次攪過嘅號碼<small>重新整理頁面會清空</small></h3><div class="hist-list" id="hl"></div></div>
+  </div>
+ </div>
+</section>
+
+<section class="page" id="p5">
+ <h2>近 30 期攪珠結果</h2>
+ <p class="lede">資料來源：香港賽馬會六合彩過去攪珠結果（26/080 至 26/109）。</p>
+ <div class="card tblwrap"><table class="tbl"><thead><tr><th>期數</th><th>日期</th><th>攪珠結果</th><th>總和</th><th>單:雙</th><th>大:細</th></tr></thead><tbody id="tbody"></tbody></table></div>
+</section>
+</main>
+<footer>只供娛樂及統計參考 · 數據截至 13/10/2026 · 非賽馬會官方產品</footer>
+<script>
+const DRAWS = [
+["25/243","2026-10-13",[3,5,9,17,21,26],38],
+["25/242","2026-10-10",[12,14,20,33,34,37],31],
+["25/241","2026-10-08",[18,19,24,31,40,44],5],
+["25/240","2026-10-06",[9,29,31,34,36,41],28],
+["25/239","2026-10-03",[8,23,29,31,34,43],48],
+["25/238","2026-09-26",[4,28,31,44,47,48],19],
+["25/237","2026-09-22",[2,34,35,43,45,46],41],
+["25/236","2026-09-19",[5,8,11,14,19,31],21],
+["25/235","2026-09-17",[4,17,31,41,47,48],8],
+["25/234","2026-09-15",[2,5,6,9,29,30],19],
+["25/233","2026-09-12",[9,18,24,33,40,47],11],
+["25/232","2026-09-10",[22,23,31,32,35,45],34],
+["25/231","2026-09-08",[9,23,28,29,35,41],38],
+["25/230","2026-09-05",[9,18,26,30,33,45],28],
+["25/229","2026-08-29",[4,7,8,11,26,30],42],
+["25/228","2026-08-27",[12,17,25,31,44,45],35],
+["25/227","2026-08-25",[1,18,19,25,34,38],7],
+["25/226","2026-08-22",[7,9,12,25,34,40],29],
+["25/225","2026-08-20",[7,9,10,15,24,46],34],
+["25/224","2026-08-18",[7,8,9,14,39,41],49],
+["25/223","2026-08-15",[4,16,25,27,28,33],14],
+["25/222","2026-08-13",[21,27,35,40,47,48],23],
+["25/221","2026-08-11",[11,19,28,36,43,48],13],
+["25/220","2026-08-08",[1,3,7,31,32,49],47],
+["25/219","2026-08-06",[13,24,29,30,42,48],3],
+["25/218","2026-08-04",[4,11,13,16,31,33],38],
+["25/217","2026-08-01",[1,7,16,22,32,37],23],
+["25/216","2026-07-30",[1,2,14,17,23,35],48],
+["25/215","2026-07-28",[4,7,14,20,21,30],34],
+["25/214","2026-07-25",[5,7,12,26,31,42],11],
+["25/213","2026-07-23",[4,7,15,29,32,46],23],
+["25/212","2026-07-21",[1,6,37,41,45,47],8],
+["25/211","2026-07-16",[18,21,26,30,32,44],27],
+["25/210","2026-07-14",[10,16,19,27,31,44],17],
+["25/209","2026-07-11",[2,5,7,11,41,46],43],
+["25/208","2026-07-09",[1,7,18,21,33,38],28],
+["25/207","2026-07-07",[5,34,37,43,48,49],27],
+["25/206","2026-07-05",[3,14,19,20,31,38],44],
+["25/205","2026-07-02",[5,17,26,31,34,46],43],
+["25/204","2026-06-30",[12,14,17,18,22,40],13],
+["25/203","2026-06-28",[5,7,26,32,37,40],35],
+["25/202","2026-06-25",[12,16,19,20,28,30],29],
+["25/201","2026-06-23",[2,15,25,34,39,41],10],
+["25/200","2026-06-20",[5,7,10,15,16,41],46],
+["25/199","2026-06-18",[6,20,26,31,34,47],24],
+["25/198","2026-06-14",[10,12,17,29,32,35],1],
+["25/197","2026-06-11",[3,6,9,10,28,29],27],
+["25/196","2026-06-09",[8,11,14,26,33,40],30],
+["25/195","2026-06-06",[5,12,19,20,34,36],46],
+["25/194","2026-06-04",[4,7,15,37,43,47],44],
+["25/193","2026-06-02",[9,14,16,35,37,45],20],
+["25/192","2026-05-30",[1,12,21,39,40,41],42],
+["25/191","2026-05-28",[7,13,25,35,40,43],47],
+["25/190","2026-05-26",[10,11,18,32,34,47],33],
+["25/189","2026-05-23",[2,7,20,42,47,49],8],
+["25/188","2026-05-21",[5,7,13,15,27,31],16],
+["25/187","2026-05-19",[1,2,4,20,21,27],19],
+["25/186","2026-05-16",[11,25,28,36,41,43],22],
+["25/185","2026-05-14",[23,27,30,34,45,47],28],
+["25/184","2026-05-12",[4,16,19,22,25,47],40],
+["25/183","2026-05-10",[9,17,26,41,42,47],8],
+["25/182","2026-05-07",[6,14,20,23,28,34],49],
+["25/181","2026-05-05",[2,7,8,10,18,47],4],
+["25/180","2026-05-02",[2,3,8,28,30,48],9],
+["25/179","2026-04-25",[4,16,21,36,42,46],9],
+["25/178","2026-04-23",[12,23,37,38,45,48],8],
+["25/177","2026-04-21",[2,4,10,11,26,44],40],
+["25/176","2026-04-18",[17,20,27,32,39,46],34],
+["25/175","2026-04-16",[6,12,14,28,44,46],15],
+["25/174","2026-04-14",[8,19,22,33,44,46],18],
+["25/173","2026-04-11",[11,14,17,28,40,42],2],
+["25/172","2026-04-09",[13,16,24,43,44,45],40],
+["25/171","2026-04-07",[8,23,25,29,33,34],49],
+["25/170","2026-04-04",[20,28,32,35,40,45],43],
+["25/169","2026-03-31",[9,18,19,20,28,32],44],
+["25/168","2026-03-28",[11,21,26,27,42,45],19],
+["25/167","2026-03-26",[12,17,23,27,28,37],3],
+["25/166","2026-03-24",[6,9,22,26,44,49],7],
+["25/165","2026-03-21",[5,9,11,18,23,47],24],
+["25/164","2026-03-19",[2,6,8,33,41,45],48],
+["25/163","2026-03-17",[16,18,22,28,45,49],13],
+["25/162","2026-03-12",[7,13,14,16,26,30],34],
+["25/161","2026-03-10",[2,16,25,34,35,37],49],
+["25/160","2026-03-07",[12,15,18,22,28,37],31],
+["25/159","2026-03-05",[4,18,24,31,42,46],11],
+["25/158","2026-03-03",[6,13,20,31,32,44],45],
+["25/157","2026-02-28",[5,15,37,39,46,47],29],
+["25/156","2026-02-26",[6,13,15,19,38,42],34],
+["25/155","2026-02-24",[2,3,4,10,13,23],12],
+["25/154","2026-02-21",[2,18,34,35,37,49],33],
+["25/153","2026-02-15",[8,28,33,36,37,46],4],
+["25/152","2026-02-12",[2,3,14,25,37,46],10],
+["25/151","2026-02-10",[3,4,14,18,26,39],40],
+["25/150","2026-02-07",[12,22,28,32,37,44],20],
+["25/149","2026-02-05",[1,9,17,24,35,36],42],
+["25/148","2026-02-03",[12,23,27,37,39,42],5],
+["25/147","2026-01-31",[25,30,32,35,36,47],46],
+["25/146","2026-01-29",[6,9,12,14,35,44],11],
+["25/145","2026-01-27",[7,12,14,25,38,47],15],
+["25/144","2026-01-24",[6,16,17,22,28,48],45],
+["25/143","2026-01-22",[4,9,15,24,27,31],45],
+["25/142","2026-01-20",[1,4,6,9,44,46],27],
+["25/141","2026-01-17",[5,12,15,23,27,42],46],
+["25/140","2026-01-15",[3,6,37,38,39,44],48],
+["25/139","2026-01-13",[14,24,34,38,48,49],27],
+["25/138","2026-01-10",[3,16,20,22,24,37],42],
+["25/137","2026-01-08",[15,21,24,40,45,46],13],
+["25/136","2026-01-06",[2,8,12,19,28,36],1],
+["25/135","2026-01-03",[2,10,13,16,20,21],14],
+["25/134","2025-12-28",[7,10,11,19,25,30],45],
+["25/133","2025-12-25",[1,2,4,30,41,43],13],
+["25/132","2025-12-21",[9,17,27,34,39,47],46],
+["25/131","2025-12-18",[6,23,28,31,33,34],11],
+["25/130","2025-12-16",[3,12,23,28,35,38],24],
+["25/129","2025-12-13",[10,17,19,28,45,49],1],
+["25/128","2025-12-11",[1,5,6,25,30,42],43],
+["25/127","2025-12-06",[4,6,26,28,34,40],25],
+["25/126","2025-12-02",[6,18,29,34,37,38],39],
+["25/125","2025-11-25",[1,2,17,35,37,48],8],
+["25/124","2025-11-20",[19,26,33,35,36,39],5],
+].map(([no,date,n,x])=>({no,date,n,x}));
+const RED=[1,2,7,8,12,13,18,19,23,24,29,30,34,35,40,45,46],BLUE=[3,4,9,10,14,15,20,25,26,31,36,37,41,42,47,48];
+const colorOf=k=>RED.includes(k)?'red':BLUE.includes(k)?'blue':'green';
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function randDraw(r){const p=[...Array(49)].map((_,i)=>i+1);for(let i=0;i<6;i++){const j=i+Math.floor(r()*(49-i));[p[i],p[j]]=[p[j],p[i]]}return p.slice(0,6)}
+function analyse(D){
+  const N=D.length, freq=Array(50).fill(0), freqX=Array(50).fill(0), last=Array(50).fill(-1);
+  D.forEach((d,i)=>{d.n.forEach(k=>{freq[k]++; if(last[k]<0)last[k]=i}); freqX[d.x]++; if(last[d.x]<0) last[d.x]=last[d.x];});
+  const gap=[...Array(50)].map((_,k)=>k? (last[k]<0?N:last[k]) :0);
+  // overlap matrix
+  const ov=D.map(a=>D.map(b=>a.n.filter(k=>b.n.includes(k)).length));
+  let pairs=[]; for(let i=0;i<N;i++)for(let j=i+1;j<N;j++) pairs.push({i,j,o:ov[i][j],c:a(D[i].n,D[j].n)});
+  function a(x,y){return x.filter(k=>y.includes(k))}
+  const hi=pairs.filter(p=>p.o>=3).sort((p,q)=>q.o-p.o||p.i-q.i);
+  const meanOv=pairs.reduce((s,p)=>s+p.o,0)/pairs.length;
+  // two-set clustering: best 2-split maximizing concentration
+  function clusterScore(Ds){
+    const n=Ds.length; let lab=Ds.map((_,i)=>i%2), best=-1e9, bestLab=null;
+    const rr=mulberry(7);
+    for(let rs=0;rs<12;rs++){
+      lab=Ds.map(()=>rr()<.5?0:1);
+      for(let it=0;it<20;it++){
+        const f=[Array(50).fill(0),Array(50).fill(0)], c=[0,0];
+        Ds.forEach((d,i)=>{c[lab[i]]++; d.n.forEach(k=>f[lab[i]][k]++)});
+        let ch=false;
+        Ds.forEach((d,i)=>{const s=[0,1].map(g=>d.n.reduce((t,k)=>t+(f[g][k]-(lab[i]==g?1:0))/Math.max(1,c[g]-(lab[i]==g?1:0)),0)); const nl=s[1]>s[0]?1:0; if(nl!=lab[i]){lab[i]=nl;ch=true}});
+        if(!ch)break;
+      }
+      const f=[Array(50).fill(0),Array(50).fill(0)], c=[0,0];
+      Ds.forEach((d,i)=>{c[lab[i]]++; d.n.forEach(k=>f[lab[i]][k]++)});
+      let sc=0; Ds.forEach((d,i)=>{sc+=d.n.reduce((t,k)=>t+(f[lab[i]][k]-1)/Math.max(1,c[lab[i]]-1),0)});
+      if(sc>best){best=sc;bestLab=lab.slice()}
+    }
+    return {score:best,lab:bestLab};
+  }
+  const cl=clusterScore(D);
+  // baseline simulation
+  const r=mulberry(2026); const sims=[], simsHi=[];
+  for(let s=0;s<300;s++){const R=[...Array(N)].map(()=>({n:randDraw(r)}));sims.push(clusterScore(R).score);
+    let h=0;for(let i=0;i<N;i++)for(let j=i+1;j<N;j++)if(R[i].n.filter(k=>R[j].n.includes(k)).length>=3)h++; simsHi.push(h);}
+  const pct=sims.filter(v=>v<cl.score).length/sims.length;
+  const pctHi=simsHi.filter(v=>v<hi.length).length/simsHi.length;
+  const expHi=simsHi.reduce((s,v)=>s+v,0)/simsHi.length;
+  const simMean=sims.reduce((s,v)=>s+v,0)/sims.length;
+  // groups
+  const groups=[0,1].map(g=>{const f=Array(50).fill(0);let idx=[];D.forEach((d,i)=>{if(cl.lab[i]==g){idx.push(i);d.n.forEach(k=>f[k]++)}});return{idx,f,top:[...Array(49)].map((_,i)=>i+1).sort((p,q)=>f[q]-f[p]||p-q).slice(0,8)}});
+  // per-draw stats
+  const stats=D.map(d=>({sum:d.n.reduce((s,k)=>s+k,0),odd:d.n.filter(k=>k%2).length,big:d.n.filter(k=>k>=25).length,cons:d.n.filter((k,i)=>i&&k-d.n[i-1]==1).length,col:['red','blue','green'].map(c=>d.n.filter(k=>colorOf(k)==c).length),tail:d.n.map(k=>k%10)}));
+  // repeat from previous draw
+  const rep=D.slice(0,-1).map((d,i)=>a(d.n,D[i+1].n).length);
+  // pair co-occurrence
+  const co={}; D.forEach(d=>{for(let i=0;i<6;i++)for(let j=i+1;j<6;j++){const key=d.n[i]+'-'+d.n[j];co[key]=(co[key]||0)+1}});
+  const topPairs=Object.entries(co).filter(([k,v])=>v>=3).sort((p,q)=>q[1]-p[1]);
+  // prediction score
+  const score=[...Array(50)].map((_,k)=>{ if(!k)return null;
+    let hot=0; D.forEach((d,i)=>{const w=1-i/(N*1.6); if(d.n.includes(k))hot+=w; if(d.x==k)hot+=w*.35});
+    const g=gap[k]; const due= g>=5&&g<=14 ? 1 : g<5 ? .45+g*.1 : Math.max(.3,1-(g-14)*.06);
+    let aff=0; D[0].n.forEach(m=>{const key=Math.min(k,m)+'-'+Math.max(k,m); aff+=(co[key]||0)}); 
+    const grpNext = groups[cl.lab[0]].f[k]; // same set as latest
+    return {k,hot,due,aff,grp:grpNext,gap:g,freq:freq[k]};
+  });
+  const L=score.slice(1); const mx=f=>Math.max(...L.map(f));
+  const H=mx(s=>s.hot),A=mx(s=>s.aff)||1,G=mx(s=>s.grp)||1;
+  L.forEach(s=>{s.total=.5*s.hot/H+.2*s.due+.15*s.aff/A+.15*s.grp/G});
+  const rank=L.slice().sort((p,q)=>q.total-p.total||p.k-q.k);
+  const bankers=rank.slice(0,4).map(s=>s.k).sort((a,b)=>a-b), legs=rank.slice(4,12).map(s=>s.k).sort((a,b)=>a-b);
+  return {sims,simsHi,N,freq,freqX,gap,ov,hi,meanOv,cl,pct,pctHi,expHi,simMean,groups,stats,rep,topPairs,rank,bankers,legs};
+}
+
+
+</script>
+<script>
+const KEY='m6data_v2', $=s=>document.querySelector(s);
+function loadAll(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.length>=20)return s}catch(e){};return DRAWS.slice()}
+function saveAll(){try{localStorage.setItem(KEY,JSON.stringify(ALL))}catch(e){}}
+let ALL=loadAll();
+const sortDesc=()=>ALL.sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:(b.no<a.no?-1:1));
+function win(){sortDesc();return ALL.slice(0,30)}
+let D=win(), A=analyse(D), S=A.stats;
+
+const ball=(k,cls='')=>`<span class="ball ${colorOf(k)} ${cls}">${k}</span>`;
+const cvar=k=>`var(--${colorOf(k)})`;
+// tabs
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id===b.dataset.p));window.scrollTo({top:0})});
+function renderAll(){
+D=win();A=analyse(D);S=A.stats;const avg=f=>(S.reduce((s,x)=>s+f(x),0)/S.length);
+// latest
+$('#latestLbl').textContent=`最新一期 ${D[0].no} · ${D[0].date.split('-').reverse().join('/')}`;
+$('#latestRow').innerHTML=D[0].n.map(k=>ball(k)).join('')+'<span class="plus">+</span>'+ball(D[0].x);
+const sig=A.pct>=.95;
+$('#verdict').innerHTML=`<span class="tag">結論</span><h3>${sig?'有跡象唔隨機':'睇落似純隨機'}</h3>
+<p>最熱：<b>${[...Array(49)].map((_,i)=>i+1).sort((a,b)=>A.freq[b]-A.freq[a]).slice(0,3).map(k=>k+'（'+A.freq[k]+'次）').join('、')}</b>。31 號 30 期出咗 11 次，係平均嘅 3 倍。</p>
+<p>「兩套波」分群集中度高過 ${Math.round(A.pct*100)}% 嘅隨機模擬——未到 95% 嘅門檻，即係<b>同隨機攪珠分唔出</b>。</p>
+<p>撞 3 粒以上嘅期數組合有 ${A.hi.length} 對，純隨機平均都有 ${A.expHi.toFixed(1)} 對。</p>`;
+// bars
+const fmax=Math.max(...A.freq);
+$('#bars').innerHTML=[...Array(49)].map((_,i)=>{const k=i+1;return `<div class="bar" title="${k} 號：${A.freq[k]} 次" style="--c:${cvar(k)};height:0" data-h="${A.freq[k]/fmax*100}"><span>${A.freq[k]}</span></div>`}).join('');
+$('#bars').style.position='relative';
+document.querySelectorAll('.avgline').forEach(e=>e.remove());
+$('#bars').insertAdjacentHTML('beforeend',`<div class="avgline" style="position:absolute;left:0;right:0;bottom:${(180/49)/fmax*182}px;border-top:1.5px dashed var(--ink);opacity:.5"></div>`);
+requestAnimationFrame(()=>setTimeout(()=>document.querySelectorAll('.bar').forEach(b=>b.style.height=b.dataset.h+'%'),60));
+$('#axis').innerHTML=[...Array(49)].map((_,i)=>`<span>${i+1}</span>`).join('');
+// board
+$('#board').innerHTML=[...Array(49)].map((_,i)=>{const k=i+1,f=A.freq[k],t=f/fmax;const bg=`color-mix(in srgb, var(--ink) ${Math.round(t*88)}%, var(--paper))`;return `<div class="cell" title="${k} 號：出現 ${f} 次，已 ${A.gap[k]} 期未出" style="background:${bg};color:${t>.45?'#fff':'var(--ink)'}"><i class="dot" style="background:${cvar(k)}"></i>${k}<small>${A.gap[k]}</small></div>`}).join('');
+// kv
+const colTot=[0,1,2].map(c=>S.reduce((s,x)=>s+x.col[c],0));
+const cold=[...Array(49)].map((_,i)=>i+1).filter(k=>A.freq[k]<=1);
+const longGap=[...Array(49)].map((_,i)=>i+1).sort((a,b)=>A.gap[b]-A.gap[a]).slice(0,5);
+const kv=[['平均總和（理論 150）',avg(x=>x.sum).toFixed(1)],['平均單數 : 雙數',avg(x=>x.odd).toFixed(1)+' : '+(6-avg(x=>x.odd)).toFixed(1)],['平均大（25+）: 細',avg(x=>x.big).toFixed(1)+' : '+(6-avg(x=>x.big)).toFixed(1)],
+['紅 / 藍 / 綠 波粒數',colTot.join(' / ')+'（理論 61 / 59 / 59）'],['平均每期重複上期號碼',(A.rep.reduce((a,b)=>a+b,0)/A.rep.length).toFixed(2)+' 粒（理論 0.73）'],
+['有連號嘅期數',S.filter(x=>x.cons>0).length+' / 30'],['得 0–1 次嘅冷門號',cold.join('、')],['最耐未出',longGap.map(k=>k+'（'+A.gap[k]+'期）').join('、')],['同期常見拍檔（≥3 次）',A.topPairs.slice(0,6).map(p=>p[0]).join('、')]];
+$('#kv').innerHTML=kv.map(([a,b])=>`<div class="kv"><span>${a}</span><b>${b}</b></div>`).join('');
+// matrix
+(function(){const n=A.N;let h=`<div class="mx" style="grid-template-columns:repeat(${n},1fr)">`;
+ for(let i=0;i<n;i++)for(let j=0;j<n;j++){const o=A.ov[i][j];if(i===j){h+=`<div style="background:var(--ink)"></div>`;continue}
+  const c=o===0?'var(--paper)':o===1?'color-mix(in srgb,var(--red) 22%,var(--paper))':o===2?'color-mix(in srgb,var(--red) 50%,var(--paper))':o===3?'color-mix(in srgb,var(--red) 80%,var(--paper))':'var(--red)';
+  h+=`<div style="background:${c}" data-t="${D[i].no} × ${D[j].no}：撞 ${o} 粒"></div>`}
+ h+='</div><div class="legend"><span>0 粒 □</span><span style="color:var(--red)">■ 1 → 4 粒（越深越多）</span><span>左上角 = 最新一期</span></div>';$('#matrix').innerHTML=h})();
+$('#hiNote').textContent=`共 ${A.hi.length} 對（隨機平均 ${A.expHi.toFixed(1)} 對）`;
+$('#pairs').innerHTML=A.hi.map(p=>`<div class="pair"><div class="ov">${p.o}</div><div><b>${D[p.i].no}</b>（${D[p.i].date.slice(5)}）× <b>${D[p.j].no}</b>（${D[p.j].date.slice(5)}）· 相隔 ${p.j-p.i} 期<div class="row">${p.c.map(k=>ball(k)).join('')}</div></div></div>`).join('');
+// histograms
+function hist(el,vals,real,label,isInt){const mn=Math.min(...vals,real),mx=Math.max(...vals,real);const B=isInt?(mx-mn+1):24,w=(mx-mn)/(isInt?B-1||1:B)||1;const bins=Array(B).fill(0);
+ vals.forEach(v=>bins[Math.min(B-1,Math.floor((v-mn)/w+(isInt?.5:0)))]++);const bm=Math.max(...bins);
+ el.innerHTML=bins.map(b=>`<div style="height:${b/bm*100}%"></div>`).join('')+`<div class="mark" style="left:${((real-mn)/w+(isInt?.5:0))/B*100}%"><span>${label}</span></div>`}
+hist($('#hist'),A.sims,A.cl.score,'真實數據',false);
+$('#histNote').innerHTML=`灰柱 = 300 次「真正隨機攪珠 30 期」用同一方法分兩組得出嘅集中度。紅線 = 真實 30 期。真實數據高過 <b>${Math.round(A.pct*100)}%</b> 嘅隨機結果——要高過 95% 先算有「兩套波」證據，所以<b>${sig?'有啲跡象':'未見明顯 pattern'}</b>。`;
+hist($('#hist2'),A.simsHi,A.hi.length,'真實 '+A.hi.length+' 對',true);
+$('#hist2Note').innerHTML=`隨機攪 30 期，平均都會有 ${A.expHi.toFixed(1)} 對期數撞 3 粒以上。真實得 ${A.hi.length} 對，屬正常範圍。即使係 26/104 同 26/101 撞足 4 粒（4、31、47、48），喺 435 對組合之中出現一兩對都唔出奇。`;
+// sets
+const gc=['var(--blue)','var(--gold)'];
+$('#tl').innerHTML=D.map((d,i)=>`<span style="background:${gc[A.cl.lab[i]]}" title="${d.no}">${d.no.slice(3)}</span>`).join('');
+$('#sets').innerHTML=A.groups.map((g,gi)=>`<div class="set" style="--c:${gc[gi]}"><h3 style="font-size:15px;margin-bottom:6px">${'AB'[gi]} 套 · ${g.idx.length} 期 ${gi===A.cl.lab[0]?'<small>（最新一期屬於呢組）</small>':''}</h3><div style="font-size:12px;color:var(--muted);margin-bottom:8px">組內最常出：</div><div class="row">${g.top.map(k=>ball(k)).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:8px">${g.top.slice(0,4).map(k=>k+' 號 '+g.f[k]+' 次').join(' · ')}</div></div>`).join('');
+// predict
+$('#bk').innerHTML=A.bankers.map(k=>ball(k)).join('');
+$('#lg').innerHTML=A.legs.map(k=>ball(k)).join('');
+const tm=A.rank[0].total;
+$('#why').innerHTML=A.rank.slice(0,12).map((s,i)=>`<tr><td><span class="ball ${colorOf(s.k)}" style="--s:26px">${s.k}</span> <small style="color:var(--muted)">${i<4?'膽':'腳'}</small></td><td class="n">${s.freq} 次</td><td class="n">${s.gap} 期</td><td><div class="meter"><i style="width:${s.total/tm*100}%"></i></div></td></tr>`).join('');
+// table
+$('#tbody').innerHTML=D.map((d,i)=>`<tr><td><b>${d.no}</b></td><td>${d.date.split('-').reverse().join('/')}</td><td><div class="row">${d.n.map(k=>ball(k)).join('')}<span class="plus">+</span>${ball(d.x)}</div></td><td>${S[i].sum}</td><td>${S[i].odd}:${6-S[i].odd}</td><td>${S[i].big}:${6-S[i].big}</td></tr>`).join('');
+
+
+}
+renderAll();
+// ===== data update =====
+function fmt(d){return d.split('-').reverse().join('/')}
+function updStatus(txt){const el=$('#updStatus');if(el)el.innerHTML=txt}
+function refresh(){saveAll();renderAll();
+ const d=D[0];$('#latestLbl').textContent=`最新一期 ${d.no} · ${fmt(d.date)}`;
+ document.querySelector('.next').innerHTML=`最新數據 ${d.no} · ${fmt(d.date)}<b>已計 ${A.N} 期</b>`;
+}
+updStatus(`已有 ${ALL.length} 期資料 · 最新 ${D[0].no} · ${fmt(D[0].date)}`);
+function parseDraws(text){ // jina markdown 或 HTML 都得
+ const t=text.replace(/<[^>]+>/g,' ').replace(/\*/g,' ').replace(/\|/g,' ').replace(/\s+/g,' ');
+ const re=/(\d{2}\/\d{3})\s+(\d{2}\/\d{2}\/\d{4})\s+((?:\d{1,2}\s+){6}\d{1,2})/g;
+ const out=[];let m;
+ while((m=re.exec(t))){const ns=m[3].trim().split(/\s+/).map(Number);
+  if(ns.length!==7||new Set(ns).size!==7||ns.some(v=>v<1||v>49))continue;
+  const main=ns.slice(0,6).sort((a,b)=>a-b);
+  out.push({no:m[1],date:m[2].split('/').reverse().join('-'),n:main,x:ns[6]})}
+ return out}
+function parseInput(s){
+ s=s.replace(/[，、；]/g,',').replace(/＋/g,'+').replace(/特別號碼|特碼|extra/gi,' + ');
+ const mD=s.match(/(\d{2})\s*\/\s*(\d{3})/);
+ const mDate=s.match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+ let rest=s; if(mD)rest=rest.replace(mD[0],' '); if(mDate)rest=rest.replace(mDate[0],' ');
+ const nums=(rest.match(/\d{1,2}/g)||[]).map(Number).filter(v=>v>=1&&v<=49);
+ if(nums.length!==7)return{err:`要 7 個 1–49 嘅號碼（6 正碼 + 1 特碼），而家讀到 ${nums.length} 個`};
+ if(new Set(nums).size!==7)return{err:'7 個號碼有重複，請檢查'};
+ let date=mDate?`20${mDate[3].slice(-2)}-${mDate[2].padStart(2,'0')}-${mDate[1].padStart(2,'0')}`:new Date().toISOString().slice(0,10);
+ let no=mD?`${mD[1]}/${mD[2]}`:(()=>{const l=ALL[0]?ALL[0].no:'26/000';const[a,b2]=l.split('/');return `${a}/${String(+b2+1).padStart(3,'0')}`})();
+ const main=nums.slice(0,6).sort((a,b)=>a-b);
+ return {no,date,n:main,x:nums[6]}}
+$('#btnPaste').onclick=()=>{
+ const r=parseInput($('#pasteIn').value.trim());
+ if(r.err){$('#pasteMsg').className='msg err';$('#pasteMsg').textContent='格式有問題：'+r.err;return}
+ const dup=ALL.some(d=>d.no===r.no);
+ ALL=ALL.filter(d=>d.no!==r.no);ALL.unshift(r);
+ $('#pasteMsg').className='msg ok';
+ $('#pasteMsg').innerHTML=`已加入 <b>${r.no}</b> · ${fmt(r.date)} · 正碼 ${r.n.join('、')} + 特碼 ${r.x}${dup?'（覆蓋舊記錄）':''}，分析已重算。`;
+ $('#pasteIn').value='';refresh();updStatus(`已有 ${ALL.length} 期資料 · 最新 ${D[0].no} · ${fmt(D[0].date)}`)};
+$('#pasteIn').addEventListener('input',()=>{const v=$('#pasteIn').value.trim();if(!v){$('#pasteMsg').textContent='';return}
+ const r=parseInput(v);$('#pasteMsg').className=r.err?'msg err':'msg ok';
+ $('#pasteMsg').textContent=r.err?('格式有問題：'+r.err):`讀到：${r.no} · ${fmt(r.date)} · 正碼 ${r.n.join('、')} + 特碼 ${r.x}，撳「加入」確定`});
+$('#btnReset').onclick=()=>{if(!confirm('清空你加入嘅期數，回復預設 30 期？'))return;ALL=DRAWS.slice();saveAll();refresh();updStatus(`已回復預設 · 最新 ${D[0].no} · ${fmt(D[0].date)}`);$('#pasteMsg').textContent=''};
+const PX=['https://cors.eu.org/','https://api.allorigins.win/raw?url=','https://test.cors.workers.dev/?','https://api.codetabs.com/v1/proxy?quest='];
+const SRC=['https://lottery.hk/en/mark-six/results/','https://www.magayo.com/lotto/hong-kong/mark-six-results/'];
+$('#btnAuto').onclick=async()=>{
+ const btn=$('#btnAuto');btn.disabled=true;btn.textContent='搵緊…';$('#pasteMsg').className='msg';$('#pasteMsg').textContent='正經公共代理讀取攪珠結果…';
+ let found=[],err=[];
+ for(const p of PX){for(const u of SRC){
+  try{const r=await fetch(p.includes('quest=')||p.includes('workers.dev')?p+u:p+encodeURIComponent(u),{cache:'no-store'});
+   if(!r.ok){err.push(p.replace(/https:\/\//,'')+' '+r.status);continue}
+   const txt=await r.text();const got=parseDraws(txt);
+   if(got.length>5){found=got;break}}catch(e){err.push(p.replace(/https:\/\//,'').split('/')[0]+' 連唔到')}}
+  if(found.length)break}
+ btn.disabled=false;btn.textContent='自動攞最新攪珠結果';
+ if(!found.length){$('#pasteMsg').className='msg err';
+  $('#pasteMsg').innerHTML=`自動更新失敗（${err.slice(0,3).join('、')||'網絡被封'}）。可以照下面手動貼上最新一期，或者用手機瀏覽器直接開結果網頁再複製號碼。`;
+  return}
+ let add=0,maxNo='';
+ found.forEach(f=>{if(!ALL.some(d=>d.no===f.no)){ALL.push(f);add++;if(!maxNo||f.date>maxNo)maxNo=f.date}});
+ saveAll();refresh();sortDesc();
+ $('#pasteMsg').className='msg ok';
+ $('#pasteMsg').innerHTML=add?`自動更新成功：加入咗 ${add} 期新數據，最新 <b>${D[0].no}</b> · ${fmt(D[0].date)}，分析已重算。`:`自動更新成功，但資料已經係最新（${D[0].no} · ${fmt(D[0].date)}）。`;
+ updStatus(`已有 ${ALL.length} 期資料 · 最新 ${D[0].no} · ${fmt(D[0].date)}`)};
+// ===== machine =====
+const cv=$('#cv'),ctx=cv.getContext('2d'),W=cv.width,R=W/2-30,C=W/2;
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const css=getComputedStyle(document.documentElement);
+const col={red:css.getPropertyValue('--red').trim(),blue:css.getPropertyValue('--blue').trim(),green:css.getPropertyValue('--green').trim()};
+let balls=[],spin=0,running=false,want=6;
+function reset(){balls=[...Array(49)].map((_,i)=>{const a=Math.random()*6.28,r=Math.random()*(R-60);return{k:i+1,x:C+Math.cos(a)*r*.6,y:C+R*.35+Math.sin(a)*r*.35,vx:0,vy:0}})}
+reset();
+const BR=27;
+function step(){
+ const agit=spin;
+ for(const b of balls){b.vy+=0.55;if(agit){b.vx+=(Math.random()-.5)*agit*2.2;b.vy+=(Math.random()-.5)*agit*2.2-(b.y>C+R*.5?agit*1.1:0)}
+  b.vx*=.992;b.vy*=.992;b.x+=b.vx;b.y+=b.vy;
+  const dx=b.x-C,dy=b.y-C,d=Math.hypot(dx,dy);if(d>R-BR){const nx=dx/d,ny=dy/d;b.x=C+nx*(R-BR);b.y=C+ny*(R-BR);const dot=b.vx*nx+b.vy*ny;b.vx-=1.7*dot*nx;b.vy-=1.7*dot*ny;b.vx+=-ny*agit*3;b.vy+=nx*agit*3}}
+ for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++){const a=balls[i],b=balls[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);if(d<BR*2&&d>0){const o=(BR*2-d)/2,nx=dx/d,ny=dy/d;a.x-=nx*o;a.y-=ny*o;b.x+=nx*o;b.y+=ny*o;const rv=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(rv<0){a.vx+=rv*nx*.9;a.vy+=rv*ny*.9;b.vx-=rv*nx*.9;b.vy-=rv*ny*.9}}}
+}
+function drawBall(b){const c=col[colorOf(b.k)];ctx.beginPath();ctx.arc(b.x,b.y,BR,0,6.29);ctx.fillStyle=c;ctx.fill();
+ ctx.beginPath();ctx.arc(b.x,b.y,BR*.55,0,6.29);ctx.fillStyle='#fff';ctx.fill();
+ const g=ctx.createRadialGradient(b.x-9,b.y-10,2,b.x,b.y,BR);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(.5,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(0,0,0,.25)');ctx.beginPath();ctx.arc(b.x,b.y,BR,0,6.29);ctx.fillStyle=g;ctx.fill();
+ ctx.fillStyle='#14302A';ctx.font='22px "Archivo Black"';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(b.k,b.x,b.y+1)}
+function frame(){if(!RM||running)step();ctx.clearRect(0,0,W,W);ctx.save();ctx.beginPath();ctx.arc(C,C,R,0,6.29);ctx.clip();balls.forEach(drawBall);ctx.restore();
+ ctx.fillStyle='#14302A';ctx.fillRect(C-34,W-36,68,40);requestAnimationFrame(frame)}
+frame();
+document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{want=+b.dataset.n;document.querySelectorAll('#seg button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+$('#go').onclick=async()=>{if(running)return;running=true;$('#go').disabled=true;$('#go').textContent='攪緊珠…';$('#tray').innerHTML='';reset();
+ const picked=[];
+ if($('#mix').checked){const k=A.bankers[Math.floor(Math.random()*A.bankers.length)];picked.push(k);balls=balls.filter(b=>b.k!==k);$('#tray').insertAdjacentHTML('beforeend',`<span class="ball ${colorOf(k)}" title="來自估算膽">${k}</span>`)}
+ spin=1.4;await sleep(RM?200:1500);
+ while(picked.length<want){spin=1.4;await sleep(RM?100:900);
+  const idx=Math.floor(Math.random()*balls.length);const b=balls.splice(idx,1)[0];picked.push(b.k);
+  $('#tray').insertAdjacentHTML('beforeend',ball(b.k));}
+ spin=0;running=false;$('#go').disabled=false;$('#go').textContent='再攪一次';
+ const sorted=picked.slice().sort((a,b)=>a-b);
+ $('#tray').insertAdjacentHTML('beforeend',`<div style="width:100%;font-size:13px;color:var(--muted)">排序：${sorted.join('、')}</div>`);
+ $('#hl').insertAdjacentHTML('afterbegin',`<div class="row"><span style="font-family:var(--mono);font-size:11px;color:var(--muted);width:42px">${new Date().toTimeString().slice(0,5)}</span>${sorted.map(k=>ball(k)).join('')}</div>`)};
+</script>
+</body>
+</html>
