@@ -48,7 +48,7 @@ def main():
             r'\["(\d{2}/\d{3})","(\d{4}-\d{2}-\d{2})",\[([\d,]+)\],(\d+)\]', h):
         cur[d] = {"no": no, "n": [int(v) for v in n.split(",")], "x": int(x)}
 
-    merged = dict(cur)
+    merged = {d: dict(v) for d, v in cur.items()}
     for url in SRC:
         try:
             t = fetch(url)
@@ -58,23 +58,24 @@ def main():
         got = parse_lotteryhk(t) if "lottery.hk" in url else parse_magayo(t)
         new = [d for d in got if d not in merged]
         for d, v in got.items():
-            merged.setdefault(d, v)
+            if d not in merged:
+                merged[d] = dict(v)
+            elif v.get("no"):
+                merged[d]["no"] = v["no"]
         print("%s -> %d rows (%d new: %s)" % (url.split("/")[2], len(got), len(new), sorted(new)[-3:]))
 
+    # Draw numbers come straight from the source page (they reset every year,
+    # e.g. 26/001). Only fill a gap when the previous draw of the same year is known.
     dates = sorted(merged)
-    anchor = next((d for d in dates if "no" in merged[d]), None)
-    if anchor is None:
-        sys.exit("no anchored draw number in current data")
-    start = dates.index(anchor)
-    counter = int(merged[anchor]["no"].split("/")[1])
-    prefix = merged[anchor]["no"].split("/")[0]
-    for d in dates[start + 1:]:
-        counter += 1
-        merged[d]["no"] = "%s/%03d" % (prefix, counter)
-    down = int(merged[anchor]["no"].split("/")[1])
-    for d in reversed(dates[:start]):
-        down -= 1
-        merged[d]["no"] = "%s/%03d" % (prefix, down)
+    for i, d in enumerate(dates):
+        if merged[d].get("no"):
+            continue
+        prev = dates[i - 1] if i else None
+        if prev and merged[prev].get("no") and prev[:4] == d[:4]:
+            y, n = merged[prev]["no"].split("/")
+            merged[d]["no"] = "%s/%03d" % (y, int(n) + 1)
+        else:
+            merged[d]["no"] = d[2:4] + "/???"
 
     rows = [(merged[d]["no"], d, merged[d]["n"], merged[d]["x"]) for d in sorted(merged, reverse=True)][:KEEP]
     rows.sort(key=lambda r: r[1], reverse=True)
@@ -84,7 +85,7 @@ def main():
     h2 = re.sub(r"const DRAWS = \[.*?\]\.map\(\(\[no,date,n,x\]\)=>\(\{no,date,n,x\}\)\);", literal, h, flags=re.S)
     latest = rows[0]
     h2 = re.sub(r'(<div class="next">).*?(</div>)',
-                r'\1下期攪珠<b>數據更新至 %s · %s</b>\2' % (latest[0], "-".join(reversed(latest[1].split("-")))),
+                r'\1下期攪珠<b>數據更新至 %s · %s</b>\2' % (latest[0], "/".join(reversed(latest[1].split("-")))),
                 h2, count=1, flags=re.S)
     if h2 == h:
         print("no change")
