@@ -62,19 +62,18 @@ def main():
         print("%s -> %d rows (%d new: %s)" % (url.split("/")[2], len(got), len(new), sorted(new)[-3:]))
 
     dates = sorted(merged)
-    anchor = next((d for d in dates if "no" in merged[d]), None)
-    if anchor is None:
+    known = [d for d in dates if merged[d].get("no")]
+    if not known:
         sys.exit("no anchored draw number in current data")
-    start = dates.index(anchor)
-    counter = int(merged[anchor]["no"].split("/")[1])
-    prefix = merged[anchor]["no"].split("/")[0]
-    for d in dates[start + 1:]:
-        counter += 1
-        merged[d]["no"] = "%s/%03d" % (prefix, counter)
-    down = int(merged[anchor]["no"].split("/")[1])
-    for d in reversed(dates[:start]):
-        down -= 1
-        merged[d]["no"] = "%s/%03d" % (prefix, down)
+    prefix = merged[known[-1]]["no"].split("/")[0]
+    newest_known = max(known)
+    n0 = int(merged[newest_known]["no"].split("/")[1])
+    for i, d in enumerate([x for x in dates if x > newest_known]):
+        merged[d]["no"] = "%s/%03d" % (prefix, n0 + 1 + i)
+    oldest_known = min(known)
+    b0 = int(merged[oldest_known]["no"].split("/")[1])
+    for i, d in enumerate(sorted([x for x in dates if x < oldest_known], reverse=True)):
+        merged[d]["no"] = "%s/%03d" % (prefix, b0 - 1 - i)
 
     rows = [(merged[d]["no"], d, merged[d]["n"], merged[d]["x"]) for d in sorted(merged, reverse=True)][:KEEP]
     rows.sort(key=lambda r: r[1], reverse=True)
