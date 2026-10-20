@@ -243,13 +243,13 @@ footer{font-size:12px;color:var(--muted);text-align:center;padding:24px 0 40px}
 </section>
 
 <section class="page" id="p3">
- <h2>26/110 期估算</h2>
+ <h2 id="pTitle">下期估算</h2>
  <p class="lede">綜合四個因素計分：近期熱度（越近期權重越高）、遺漏回補（隔咗 5–14 期未出）、同上期號碼嘅拍檔次數、同「同一套波」嘅組內熱號。最高 4 個做膽，跟住 8 個做腳。</p>
  <div class="grid2" style="grid-template-columns:1.25fr 1fr">
   <div class="slip">
    <div class="slip-in">
     <h3>膽拖參考 · 4 膽 8 腳</h3>
-    <div class="meta">26/110 · 15/10/2026 · 根據 26/080 – 26/109</div>
+    <div class="meta" id="pMeta"></div>
     <div class="zone"><div class="nm">膽<small>Bankers</small></div><div class="row" id="bk"></div></div>
     <div class="zone legs"><div class="nm">腳<small>Legs</small></div><div class="row" id="lg"></div></div>
     <p class="cost">4 膽 8 腳 = 每次 C(8,2) = 28 注；以每注 $10 計 = $280（每注 $5 部分注 = $140）。</p>
@@ -543,6 +543,9 @@ const gc=['var(--blue)','var(--gold)'];
 $('#tl').innerHTML=D.map((d,i)=>`<span style="background:${gc[A.cl.lab[i]]}" title="${d.no}">${d.no.slice(3)}</span>`).join('');
 $('#sets').innerHTML=A.groups.map((g,gi)=>`<div class="set" style="--c:${gc[gi]}"><h3 style="font-size:15px;margin-bottom:6px">${'AB'[gi]} 套 · ${g.idx.length} 期 ${gi===A.cl.lab[0]?'<small>（最新一期屬於呢組）</small>':''}</h3><div style="font-size:12px;color:var(--muted);margin-bottom:8px">組內最常出：</div><div class="row">${g.top.map(k=>ball(k)).join('')}</div><div style="font-size:12px;color:var(--muted);margin-top:8px">${g.top.slice(0,4).map(k=>k+' 號 '+g.f[k]+' 次').join(' · ')}</div></div>`).join('');
 // predict
+{const nx=(()=>{const[y,n]=D[0].no.split('/');return y+'/'+String(+n+1).padStart(3,'0')})();
+$('#pTitle').textContent=nx+' 期估算';
+$('#pMeta').textContent=`${nx} · 下一期 · 根據 ${D[D.length-1].no} – ${D[0].no}`;}
 $('#bk').innerHTML=A.bankers.map(k=>ball(k)).join('');
 $('#lg').innerHTML=A.legs.map(k=>ball(k)).join('');
 const tm=A.rank[0].total;
